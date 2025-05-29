@@ -18,6 +18,7 @@ const PostJob = () => {
         description: "",
         requirements: "",
         salary: "",
+        salaryType: "lpa",
         location: "",
         jobType: "",
         experience: "",
@@ -104,6 +105,23 @@ const PostJob = () => {
                                 onChange={changeEventHandler}
                                 className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
                             />
+                        </div>
+                        <div>
+                            <Label>Salary Type</Label>
+                            <Select 
+                                defaultValue="lpa" 
+                                onValueChange={(value) => setInput({...input, salaryType: value})}
+                            >
+                                <SelectTrigger className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1">
+                                    <SelectValue placeholder="Select Salary Type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectItem value="lpa">LPA (Lakhs Per Annum)</SelectItem>
+                                        <SelectItem value="monthly">Per Month</SelectItem>
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
                         </div>
                         <div>
                             <Label>Location</Label>

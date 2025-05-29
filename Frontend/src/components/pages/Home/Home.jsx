@@ -3,12 +3,11 @@ import Navbar from "../../shared/Navbar";
 import HeroSection from "./HeroSection";
 import LatestJobs from "./LatestJobs";
 import Footer from "@/components/shared/Footer";
-import useGetAllJobs from "@/hooks/useGetAllJobs";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import ChatBot from "@/components/shared/ChatBot";
 
 const Home = () => {
-  useGetAllJobs();
   const {user} = useSelector(store => store.auth)
   const navigate = useNavigate()
   useEffect(()=>{
@@ -23,6 +22,7 @@ const Home = () => {
       <HeroSection />
       <LatestJobs />
       <Footer />
+      {user?.role === "student" && <ChatBot />}
     </div>
   );
 };

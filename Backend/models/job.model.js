@@ -18,6 +18,11 @@ const jobSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  salaryType: {
+    type: String,
+    enum: ['lpa', 'monthly'],
+    default: 'lpa',
+  },
   experienceLevel: {
     type: Number,
     required: true,

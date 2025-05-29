@@ -4,7 +4,8 @@ const companySlice = createSlice({
   name: "company",
   initialState: {
     singleCompany: null,
-    companies: [],
+    companies: [], // Private companies (owned by current user)
+    publicCompanies: [], // All companies for public display
     searchCompanyByText: "",
   },
   reducers: {
@@ -15,10 +16,18 @@ const companySlice = createSlice({
     setCompanies: (state, action) => {
       state.companies = action.payload;
     },
+    setPublicCompanies: (state, action) => {
+      state.publicCompanies = action.payload;
+    },
     setSearchCompanyByText: (state, action) => {
       state.searchCompanyByText = action.payload;
     },
   },
 });
-export const { setSingleCompany, setCompanies,setSearchCompanyByText } = companySlice.actions;
+export const { 
+  setSingleCompany, 
+  setCompanies, 
+  setPublicCompanies,
+  setSearchCompanyByText 
+} = companySlice.actions;
 export default companySlice.reducer;

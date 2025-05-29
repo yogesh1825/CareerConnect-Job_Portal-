@@ -1,36 +1,34 @@
-import { setCompanies } from "@/redux/companySlice";
+import { setPublicCompanies } from "@/redux/companySlice";
 import { COMPANY_API_END_POINT } from "@/utils/constant";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
-const useGetAllCompanies = () => {
+const useGetAllPublicCompanies = () => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const fetchCompanies = async () => {
+    const fetchPublicCompanies = async () => {
       try {
         setIsLoading(true);
-        const res = await axios.get(`${COMPANY_API_END_POINT}/get`, {
-          withCredentials: true,
-        });
+        const res = await axios.get(`${COMPANY_API_END_POINT}/getall`);
         if (res.data.success) {
-          dispatch(setCompanies(res.data.companies));
+          dispatch(setPublicCompanies(res.data.companies));
         } else {
-          dispatch(setCompanies([]));
+          dispatch(setPublicCompanies([]));
         }
       } catch (error) {
         console.log(error);
-        dispatch(setCompanies([]));
+        dispatch(setPublicCompanies([]));
       } finally {
         setIsLoading(false);
       }
     };
-    fetchCompanies();
+    fetchPublicCompanies();
   }, [dispatch]);
 
   return { isLoading };
 };
 
-export default useGetAllCompanies;
+export default useGetAllPublicCompanies; 

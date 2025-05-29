@@ -84,7 +84,7 @@ export const getAppliedJobs = async (req, res) => {
   }
 };
 
-// Get applications (Admin can check how many applicants applyed for job)
+// Get applicants for a job (Recruiter perspective)
 export const getApplicants = async (req, res) => {
   try {
     const jobId = req.params.id;

@@ -10,7 +10,7 @@ export const register = async (req, res) => {
     const { fullname, email, phoneNumber, password, role } = req.body;
     if (!fullname || !email || !phoneNumber || !password || !role) {
       return res.status(400).json({
-        message: "Somthing is missing",
+        message: "Something is missing",
         success: false,
       });
     }
@@ -38,11 +38,15 @@ export const register = async (req, res) => {
       },
     });
     return res.status(201).json({
-      message: "Asccount created successfully",
+      message: "Account created successfully",
       success: true,
     });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
   }
 };
 
@@ -52,21 +56,21 @@ export const login = async (req, res) => {
     const { email, password, role } = req.body;
     if (!email || !password || !role) {
       return res.status(400).json({
-        message: "Somthing is missing",
+        message: "Something is missing",
         success: false,
       });
     }
     let user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({
-        message: "Incurrect email or password",
+        message: "Incorrect email or password",
         success: false,
       });
     }
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
       return res.status(404).json({
-        message: "Incurrect email or password",
+        message: "Incorrect email or password",
         success: false,
       });
     }
@@ -98,7 +102,8 @@ export const login = async (req, res) => {
       .cookie("token", token, {
         maxAge: 1 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: "strict",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        secure: process.env.NODE_ENV === "production",
       })
       .json({
         message: `Welcome  ${user.fullname}`,
@@ -107,23 +112,35 @@ export const login = async (req, res) => {
       });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
   }
 };
 
 // User Logout
 export const logout = async (req, res) => {
   try {
-    return res.status(200).cookie("token", "", { maxAge: 0 }).json({
+    return res.status(200).cookie("token", "", { 
+      maxAge: 0,
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production",
+    }).json({
       message: "Logged out successfully",
       success: true,
     });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
   }
 };
 
 // User Update (update profile)
-
 export const updateProfile = async (req, res) => {
   try {
     const { fullname, email, phoneNumber, bio, skills } = req.body;
@@ -181,5 +198,94 @@ export const updateProfile = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
+  }
+};
+
+// Toggle a job in user's saved jobs (save or unsave)
+export const toggleSavedJob = async (req, res) => {
+  try {
+    const userId = req.id;
+    const jobId = req.params.id;
+    
+    if (!jobId) {
+      return res.status(400).json({
+        message: "Job ID is required",
+        success: false,
+      });
+    }
+
+    // Find the user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+
+    // Check if the job is already saved
+    const jobIndex = user.savedJobs.indexOf(jobId);
+    if (jobIndex !== -1) {
+      // If job is already saved, remove it
+      user.savedJobs.splice(jobIndex, 1);
+      await user.save();
+      return res.status(200).json({
+        message: "Job removed from saved jobs",
+        isSaved: false,
+        success: true,
+      });
+    } else {
+      // If job is not saved, add it
+      user.savedJobs.push(jobId);
+      await user.save();
+      return res.status(200).json({
+        message: "Job saved successfully",
+        isSaved: true,
+        success: true,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
+  }
+};
+
+// Get all saved jobs for a user
+export const getSavedJobs = async (req, res) => {
+  try {
+    const userId = req.id;
+    
+    // Find the user and populate their saved jobs
+    const user = await User.findById(userId).populate({
+      path: "savedJobs",
+      populate: {
+        path: "company",
+      }
+    });
+    
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      savedJobs: user.savedJobs,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
   }
 };

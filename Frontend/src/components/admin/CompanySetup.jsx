@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Navbar from '../shared/Navbar'
-import { ArrowLeft, Loader2 } from 'lucide-react'
+import { ArrowLeft, Loader2, AlertTriangle } from 'lucide-react'
 import { Button } from '../ui/button'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Label } from '../ui/label'
@@ -9,11 +9,11 @@ import axios from 'axios'
 import { COMPANY_API_END_POINT } from '@/utils/constant'
 import { toast } from 'sonner'
 import { useSelector } from 'react-redux'
-import useGetCompanyById from '@/hooks/useGetCompanyById'
+import useGetAdminCompanyById from '@/hooks/useGetAdminCompanyById'
 
 const CompanySetup = () => {
   const params = useParams()
-  useGetCompanyById(params.id)
+  const { isLoading: isFetchingCompany, isAuthorized } = useGetAdminCompanyById(params.id)
   
   const [input, setInput] = useState({
     name: "",
@@ -25,7 +25,6 @@ const CompanySetup = () => {
   const { singleCompany } = useSelector(store => store.company)
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -58,12 +57,16 @@ const CompanySetup = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Error updating company");
     } finally {
       setLoading(false)
     }
   }
   useEffect(() => {
+    if (!singleCompany) {
+      return;
+    }
+    
     setInput({
       name: singleCompany.name || "",
       description: singleCompany.description || "",
@@ -72,6 +75,35 @@ const CompanySetup = () => {
       file: singleCompany.file || null
     })
   }, [singleCompany]);
+
+  // If unauthorized, show a message
+  if (!isAuthorized && !isFetchingCompany) {
+    return (
+      <div>
+        <Navbar />
+        <div className="max-w-xl mx-auto my-10 p-6 text-center">
+          <AlertTriangle className="w-16 h-16 text-amber-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
+          <p className="mb-6">You are not authorized to edit this company.</p>
+          <Button onClick={() => navigate("/admin/companies")}>
+            Return to Companies
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state
+  if (isFetchingCompany) {
+    return (
+      <div>
+        <Navbar />
+        <div className="flex items-center justify-center h-[60vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-[#6A38C2]" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>

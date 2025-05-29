@@ -1,4 +1,3 @@
-import React from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
@@ -10,10 +9,15 @@ import JobsDescription from "./components/pages/Jobs/JobsDescription";
 import Companies from "./components/admin/Companies";
 import CompanyCreate from "./components/admin/CompanyCreate";
 import CompanySetup from "./components/admin/CompanySetup";
+import CompanyView from "./components/admin/CompanyView";
 import AdminJobs from "./components/admin/AdminJobs";
 import PostJob from "./components/admin/PostJob";
+import JobSetup from "./components/admin/JobSetup";
 import Applicants from "./components/admin/Applicants";
-import ProtectedRoute from "./components/admin/ProtectedRoutes";
+import AdminProtectedRoute from "./components/admin/ProtectedRoutes";
+import SavedJobs from "./components/pages/SavedJobs/SavedJobs";
+import UserProtectedRoute from "./components/shared/ProtectedRoute";
+import Courses from "./components/pages/Courses/Courses";
 
 const appRouter = createBrowserRouter([
   {
@@ -42,64 +46,91 @@ const appRouter = createBrowserRouter([
   },
   {
     path: "/profile",
-    element: <Profile />,
+    element: <UserProtectedRoute>
+      <Profile />
+    </UserProtectedRoute>,
+  },
+  {
+    path: "/saved-jobs",
+    element: <UserProtectedRoute>
+      <SavedJobs />
+    </UserProtectedRoute>,
+  },
+  {
+    path: "/courses",
+    element: <UserProtectedRoute>
+      <Courses />
+    </UserProtectedRoute>,
   },
   // admin side routes
   {
     path: "/admin/companies",
     element: (
-      <ProtectedRoute>
+      <AdminProtectedRoute>
         <Companies />
-      </ProtectedRoute>
+      </AdminProtectedRoute>
     ),
   },
   {
     path: "/admin/companies/create",
     element: (
-      <ProtectedRoute>
+      <AdminProtectedRoute>
         <CompanyCreate />
-      </ProtectedRoute>
+      </AdminProtectedRoute>
     ),
   },
   {
     path: "/admin/companies/:id",
     element: (
-      <ProtectedRoute>
+      <AdminProtectedRoute>
         <CompanySetup />
-      </ProtectedRoute>
+      </AdminProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/companies/view/:id",
+    element: (
+      <AdminProtectedRoute>
+        <CompanyView />
+      </AdminProtectedRoute>
     ),
   },
   {
     path: "/admin/jobs",
     element: (
-      <ProtectedRoute>
+      <AdminProtectedRoute>
         <AdminJobs />
-      </ProtectedRoute>
+      </AdminProtectedRoute>
     ),
   },
   {
     path: "/admin/jobs/create",
     element: (
-      <ProtectedRoute>
+      <AdminProtectedRoute>
         <PostJob />
-      </ProtectedRoute>
+      </AdminProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/jobs/:id",
+    element: (
+      <AdminProtectedRoute>
+        <JobSetup />
+      </AdminProtectedRoute>
     ),
   },
   {
     path: "/admin/jobs/:id/applicants",
     element: (
-      <ProtectedRoute>
+      <AdminProtectedRoute>
         <Applicants />
-      </ProtectedRoute>
+      </AdminProtectedRoute>
     ),
   },
 ]);
-const App = () => {
-  return (
-    <>
-      <RouterProvider router={appRouter} />
-    </>
-  );
-};
+
+function App() {
+  return <RouterProvider router={appRouter} />;
+}
 
 export default App;
