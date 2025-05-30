@@ -92,7 +92,7 @@ const FilterCard = () => {
                 return (
                   <div 
                     key={itemId} 
-                    className={`flex items-center space-x-2 p-1.5 rounded-md transition-colors cursor-pointer ${isSelected ? 'bg-purple-50' : 'hover:bg-gray-50'}`}
+                    className={`flex items-center space-x-2 p-1.5 rounded-md transition-all duration-300 ease-in-out cursor-pointer transform hover:scale-105 hover:shadow-sm ${isSelected ? 'bg-purple-50' : 'hover:bg-gray-50'}`}
                     onClick={() => handleFilterChange(item, data.filterType)}
                   >
                     <div className={`h-4 w-4 rounded-full border ${isSelected ? 'border-[#6A38C2] bg-[#6A38C2]' : 'border-gray-300'} flex items-center justify-center`}>

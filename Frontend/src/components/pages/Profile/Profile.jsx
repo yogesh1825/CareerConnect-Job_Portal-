@@ -163,7 +163,14 @@ const Profile = () => {
                 {/* Basic Info */}
                 <div>
                   <h1 className="text-2xl font-bold text-gray-800">{user?.fullname}</h1>
-                  <p className="text-gray-600 mt-1">{user?.profile?.bio || "No bio added yet"}</p>
+                  <div className="mt-3 bg-gray-50 rounded-lg p-4">
+                    <textarea
+                      value={user?.profile?.bio || "No bio added yet"}
+                      readOnly
+                      className="w-full min-h-[100px] bg-transparent text-gray-600 text-justify resize-none border-none focus:ring-0 focus:outline-none"
+                      style={{ lineHeight: '1.6' }}
+                    />
+                  </div>
                 </div>
                 
                 {/* Contact Info */}

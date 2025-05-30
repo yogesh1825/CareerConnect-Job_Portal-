@@ -3,7 +3,7 @@ import Navbar from "../../shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Code, FileVideo, Star, Play, Lock, ChevronDown, BookOpen, GraduationCap, Laptop } from "lucide-react";
+import { Code, FileVideo, Star, Play, Lock, ChevronDown, BookOpen, GraduationCap, Laptop, IndianRupee } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
@@ -32,19 +32,24 @@ const FloatingIcon = ({ icon: Icon, delay, duration, className }) => (
 
 const BackgroundAnimation = () => (
   <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-    {/* Floating icons with larger size and better positioning */}
-    <FloatingIcon icon={Code} delay={0} className="top-1/4 left-1/4" />
-    <FloatingIcon icon={BookOpen} delay={1} className="top-1/3 right-1/4" />
-    <FloatingIcon icon={GraduationCap} delay={2} className="bottom-1/4 left-1/3" />
-    <FloatingIcon icon={Laptop} delay={1.5} className="bottom-1/3 right-1/3" />
+    {/* Left side floating icons */}
+    <div className="absolute left-0 top-0 w-1/4 h-full">
+      <FloatingIcon icon={Code} delay={0} className="top-1/4 left-1/2" />
+      <FloatingIcon icon={BookOpen} delay={1} className="top-1/2 left-1/3" />
+      <FloatingIcon icon={GraduationCap} delay={2} className="bottom-1/4 left-1/2" />
+      <FloatingIcon icon={Laptop} delay={1.5} className="bottom-1/3 left-1/3" />
+    </div>
+
+    {/* Right side floating icons */}
+    <div className="absolute right-0 top-0 w-1/4 h-full">
+      <FloatingIcon icon={Code} delay={2.5} className="top-1/3 right-1/2" />
+      <FloatingIcon icon={BookOpen} delay={3} className="top-1/2 right-1/3" />
+      <FloatingIcon icon={Laptop} delay={2} className="bottom-1/4 right-1/3" />
+    </div>
     
-    {/* Additional floating icons */}
-    <FloatingIcon icon={Code} delay={2.5} className="top-1/2 left-1/5" />
-    <FloatingIcon icon={BookOpen} delay={3} className="bottom-1/2 right-1/5" />
-    
-    {/* Decorative circles with enhanced visibility */}
+    {/* Left side decorative circle */}
     <motion.div
-      className="absolute top-1/4 right-1/4 w-96 h-96 rounded-full bg-gradient-to-r from-purple-200/30 to-purple-300/30"
+      className="absolute left-0 top-1/4 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-r from-purple-200/30 to-purple-300/30"
       animate={{
         scale: [1, 1.2, 1],
         opacity: [0.2, 0.4, 0.2],
@@ -56,8 +61,10 @@ const BackgroundAnimation = () => (
         ease: "easeInOut"
       }}
     />
+
+    {/* Right side decorative circle */}
     <motion.div
-      className="absolute bottom-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-gradient-to-r from-purple-300/30 to-purple-400/30"
+      className="absolute right-0 top-1/2 translate-x-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-r from-purple-300/30 to-purple-400/30"
       animate={{
         scale: [1.2, 1, 1.2],
         opacity: [0.2, 0.4, 0.2],
@@ -70,28 +77,14 @@ const BackgroundAnimation = () => (
       }}
     />
 
-    {/* Additional decorative elements */}
-    <motion.div
-      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-r from-purple-100/20 to-purple-200/20"
-      animate={{
-        scale: [1, 1.1, 1],
-        opacity: [0.1, 0.3, 0.1],
-      }}
-      transition={{
-        duration: 12,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }}
-    />
-
-    {/* Animated dots pattern */}
+    {/* Animated dots pattern - positioned on sides */}
     <div className="absolute inset-0">
-      {[...Array(20)].map((_, i) => (
+      {[...Array(30)].map((_, i) => (
         <motion.div
           key={i}
           className="absolute w-2 h-2 rounded-full bg-purple-300/30"
           style={{
-            left: `${Math.random() * 100}%`,
+            left: i % 2 === 0 ? `${Math.random() * 20}%` : `${80 + Math.random() * 20}%`,
             top: `${Math.random() * 100}%`,
           }}
           animate={{

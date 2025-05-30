@@ -26,7 +26,7 @@ const UpdateProfile = ({ open, setOpen }) => {
     email: user?.email || "",
     phoneNumber: user?.phoneNumber || "",
     bio: user?.profile?.bio || "",
-    skills: user?.profile?.skills?.map((skill) => skill) || "",
+    skills: user?.profile?.skills?.join(", ") || "",
     file: user?.profile?.resume || "",
   });
   const dispatch = useDispatch();
@@ -42,18 +42,21 @@ const UpdateProfile = ({ open, setOpen }) => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("fullname", input.fullname);
-    formData.append("email", input.email);
-    formData.append("phoneNumber", input.phoneNumber);
-    formData.append("bio", input.bio);
-    formData.append("skills", input.skills);
-    if (input.file) {
-      formData.append("file", input.file);
-    }
-
     try {
       setLoading(true);
+      const formData = new FormData();
+      
+      // Add all fields to formData with correct field names
+      formData.append("fullname", input.fullname);
+      formData.append("email", input.email);
+      formData.append("phoneNumber", input.phoneNumber);
+      formData.append("bio", input.bio);
+      formData.append("skills", input.skills);
+      
+      if (input.file) {
+        formData.append("file", input.file);
+      }
+
       const res = await axios.post(
         `${USER_API_END_POINT}/profile/update`,
         formData,
@@ -64,18 +67,20 @@ const UpdateProfile = ({ open, setOpen }) => {
           withCredentials: true,
         }
       );
+
       if (res.data.success) {
         dispatch(setUser(res.data.user));
-        toast.success(res.data.message);
+        toast.success("Profile updated successfully");
+        setOpen(false);
+      } else {
+        toast.error(res.data.message || "Failed to update profile");
       }
     } catch (error) {
-      console.log(error);
-      toast.error(error.response.data.message);
+      console.error("Profile update error:", error);
+      toast.error(error.response?.data?.message || "Failed to update profile");
     } finally {
       setLoading(false);
     }
-    setOpen(false);
-    console.log(input);
   };
 
   return (
@@ -87,19 +92,20 @@ const UpdateProfile = ({ open, setOpen }) => {
         >
           <DialogHeader>
             <DialogTitle>Update Profile</DialogTitle>
-            <form action="" onSubmit={submitHandler}>
+            <form onSubmit={submitHandler}>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-3">
-                  <Label htmlFor="name" className="">
+                  <Label htmlFor="fullname" className="">
                     Name :
                   </Label>
                   <Input
-                    id="name"
-                    name="name"
+                    id="fullname"
+                    name="fullname"
                     value={input.fullname}
                     onChange={changeEventHandler}
                     type="text"
                     className="col-span-3"
+                    placeholder="Enter your full name"
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-3">
@@ -113,32 +119,34 @@ const UpdateProfile = ({ open, setOpen }) => {
                     onChange={changeEventHandler}
                     type="email"
                     className="col-span-3"
+                    placeholder="Enter your email"
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-3">
-                  <Label htmlFor="number" className="">
+                  <Label htmlFor="phoneNumber" className="">
                     Number :
                   </Label>
                   <Input
-                    id="number"
-                    name="number"
+                    id="phoneNumber"
+                    name="phoneNumber"
                     value={input.phoneNumber}
                     onChange={changeEventHandler}
                     type="text"
                     className="col-span-3"
+                    placeholder="Enter your phone number"
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-3">
                   <Label htmlFor="bio" className="">
                     Bio :
                   </Label>
-                  <Input
+                  <textarea
                     id="bio"
                     name="bio"
                     value={input.bio}
                     onChange={changeEventHandler}
-                    type="text"
-                    className="col-span-3"
+                    className="col-span-3 min-h-[100px] p-2 rounded-md border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Tell us about yourself"
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-3">
@@ -152,6 +160,7 @@ const UpdateProfile = ({ open, setOpen }) => {
                     onChange={changeEventHandler}
                     type="text"
                     className="col-span-3"
+                    placeholder="Enter your skills (comma separated)"
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -170,10 +179,8 @@ const UpdateProfile = ({ open, setOpen }) => {
               </div>
               <DialogFooter>
                 {loading ? (
-                  <Button className="w-full my-4 ">
-                    {" "}
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please
-                    wait{" "}
+                  <Button className="w-full my-4">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait
                   </Button>
                 ) : (
                   <Button type="submit" className="w-full my-4 rounded-full">

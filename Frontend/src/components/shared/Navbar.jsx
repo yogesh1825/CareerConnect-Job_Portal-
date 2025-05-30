@@ -11,6 +11,7 @@ import axios from "axios";
 import { USER_API_END_POINT } from "@/utils/constant";
 import { setUser } from "@/redux/authSlice";
 import { resetSavedJobs } from "@/redux/jobSlice";
+import { motion } from "framer-motion";
 
 const Navbar = () => {
   const { user } = useSelector((store) => store.auth);
@@ -194,61 +195,84 @@ const Navbar = () => {
           ) : (
             <Popover>
               <PopoverTrigger asChild>
-                <div className="flex items-center gap-2 cursor-pointer rounded-full px-2 py-1 transition-colors hover:bg-gray-100">
-                  <Avatar className="border-2 border-purple-200 h-8 w-8">
-                    <AvatarImage src={user?.profile?.profilePhoto} />
-                  </Avatar>
-                  <span className="text-sm font-medium mr-1 hidden sm:block">{user?.fullname?.split(' ')[0]}</span>
+                <motion.div 
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-2 cursor-pointer rounded-full px-2 py-1 transition-colors hover:bg-purple-50"
+                >
+                  <div className="relative">
+                    <Avatar className="h-9 w-9 border-2 border-purple-200 ring-2 ring-purple-100">
+                      <AvatarImage 
+                        src={user?.profile?.profilePhoto} 
+                        className="object-cover"
+                      />
+                    </Avatar>
+                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                  </div>
+                  <span className="text-sm font-medium mr-1 hidden sm:block text-gray-700">{user?.fullname?.split(' ')[0]}</span>
                   <ChevronDown size={16} className="text-gray-500" />
-                </div>
+                </motion.div>
               </PopoverTrigger>
               <PopoverContent className="w-80">
-                <div className="">
-                  <div className="flex gap-2 space-x-2">
-                    <Avatar className="cursor-pointer border-2 border-purple-200 h-10 w-10">
+                <div className="p-2">
+                  <div className="flex gap-3 items-center p-3 bg-purple-50 rounded-lg">
+                    <Avatar className="h-14 w-14 border-2 border-purple-200 ring-2 ring-purple-100">
                       <AvatarImage
                         src={user?.profile?.profilePhoto}
-                        alt="@shadcn"
+                        alt={user?.fullname}
+                        className="object-cover"
                       />
                     </Avatar>
                     <div>
-                      <h4 className="font-medium">{user?.fullname}</h4>
-                      <p className="text-sm text-muted-foreground">
-                        {user?.profile?.bio || user?.email}
+                      <h4 className="font-semibold text-gray-800">{user?.fullname}</h4>
+                      <p className="text-sm text-gray-600">
+                        {user?.email}
                       </p>
                     </div>
                   </div>
                   <div className="flex flex-col my-4 text-gray-600">
                     {user && user.role === "student" && (
-                      <div className="flex w-full items-center gap-2 cursor-pointer hover:text-purple-700 p-2 rounded hover:bg-purple-50">
+                      <motion.div 
+                        whileHover={{ x: 5 }}
+                        className="flex w-full items-center gap-2 cursor-pointer hover:text-[#6A38C2] p-2 rounded hover:bg-purple-50"
+                      >
                         <User2 size={18} />
-                        <Link to="/profile" className="flex-1 hover:text-purple-700">
+                        <Link to="/profile" className="flex-1 hover:text-[#6A38C2]">
                           View Profile
                         </Link>
-                      </div>
+                      </motion.div>
                     )}
                     {user && user.role === "student" && (
-                      <div className="flex w-full items-center gap-2 cursor-pointer hover:text-purple-700 p-2 rounded hover:bg-purple-50">
+                      <motion.div 
+                        whileHover={{ x: 5 }}
+                        className="flex w-full items-center gap-2 cursor-pointer hover:text-[#6A38C2] p-2 rounded hover:bg-purple-50"
+                      >
                         <Code size={18} />
-                        <Link to="/courses" className="flex-1 hover:text-purple-700">
+                        <Link to="/courses" className="flex-1 hover:text-[#6A38C2]">
                           Courses
                         </Link>
-                      </div>
+                      </motion.div>
                     )}
                     {user && user.role === "student" && (
-                      <div className="flex w-full items-center gap-2 cursor-pointer hover:text-purple-700 p-2 rounded hover:bg-purple-50">
+                      <motion.div 
+                        whileHover={{ x: 5 }}
+                        className="flex w-full items-center gap-2 cursor-pointer hover:text-[#6A38C2] p-2 rounded hover:bg-purple-50"
+                      >
                         <BookmarkIcon size={18} />
-                        <Link to="/saved-jobs" className="flex-1 hover:text-purple-700">
+                        <Link to="/saved-jobs" className="flex-1 hover:text-[#6A38C2]">
                           Saved Jobs {savedJobsCount > 0 && `(${savedJobsCount})`}
                         </Link>
-                      </div>
+                      </motion.div>
                     )}
-                    <div className="flex w-full items-center gap-2 cursor-pointer hover:text-purple-700 p-2 rounded hover:bg-purple-50">
+                    <motion.div 
+                      whileHover={{ x: 5 }}
+                      className="flex w-full items-center gap-2 cursor-pointer hover:text-[#6A38C2] p-2 rounded hover:bg-purple-50"
+                    >
                       <LogOut size={18} />
-                      <button onClick={logoutHandler} className="flex-1 text-left hover:text-purple-700">
+                      <button onClick={logoutHandler} className="flex-1 text-left hover:text-[#6A38C2]">
                         Logout
                       </button>
-                    </div>
+                    </motion.div>
                   </div>
                 </div>
               </PopoverContent>

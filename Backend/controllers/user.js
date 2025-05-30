@@ -144,20 +144,6 @@ export const logout = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const { fullname, email, phoneNumber, bio, skills } = req.body;
-
-    // cloudinary
-    const file = req.file;
-    const fileUri = getDataUri(file);
-    const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-      resource_type: "raw", // Treat it as a document, not an image
-    });
-
-    // console.log("Cloudinary Response:", cloudResponse);
-
-    let skillsArray;
-    if (skills) {
-      skillsArray = skills.split(",");
-    }
     const userId = req.id; // middleware authentication
     let user = await User.findById(userId);
 
@@ -167,17 +153,28 @@ export const updateProfile = async (req, res) => {
         success: false,
       });
     }
+
     // updating data
     if (fullname) user.fullname = fullname;
     if (email) user.email = email;
     if (phoneNumber) user.phoneNumber = phoneNumber;
     if (bio) user.profile.bio = bio;
-    if (skills) user.profile.skills = skillsArray;
+    if (skills) {
+      const skillsArray = skills.split(",").map(skill => skill.trim());
+      user.profile.skills = skillsArray;
+    }
 
-    // resume
-    if (cloudResponse) {
-      user.profile.resume = cloudResponse.secure_url;
-      user.profile.resumeOriginalName = file.originalname;
+    // Handle file upload only if a file is provided
+    if (req.file) {
+      const fileUri = getDataUri(req.file);
+      const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
+        resource_type: "raw", // Treat it as a document, not an image
+      });
+      
+      if (cloudResponse) {
+        user.profile.resume = cloudResponse.secure_url;
+        user.profile.resumeOriginalName = req.file.originalname;
+      }
     }
 
     await user.save();
@@ -197,9 +194,9 @@ export const updateProfile = async (req, res) => {
       success: true,
     });
   } catch (error) {
-    console.log(error);
+    console.error("Profile update error:", error);
     return res.status(500).json({
-      message: "Internal server error",
+      message: error.message || "Internal server error",
       success: false,
     });
   }
